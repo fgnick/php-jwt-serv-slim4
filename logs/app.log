@@ -1,0 +1,8 @@
+[2025-05-26T06:19:42.984225+00:00] app.INFO: Users list was viewed. [] {"uid":"d41a827"}
+[2025-05-26T06:25:56.835810+00:00] app.INFO: User of id `1` was viewed. [] {"uid":"0b6562f"}
+[2025-05-26T06:27:38.236657+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"494153f"}
+[2025-05-26T14:17:58.892988+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"01d7eb0"}
+[2025-05-27T04:56:13.470232+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"4f22bdf"}
+[2025-05-27T08:19:14.759186+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"56fe549"}
+[2025-05-27T08:50:36.338377+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"db10d02"}
+[2025-06-02T02:18:32.024975+00:00] app.INFO: User of id 1 was viewed. [] {"uid":"084a181"}

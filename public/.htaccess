@@ -1,0 +1,86 @@
+Options All -Indexes
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Redirect to HTTPS
+  # RewriteEngine On
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Blocking bad bots and site rippers
+  # If $_SERVER['HTTP_USER_AGENT'] return null or empty, it will be blocked in Apache
+  RewriteCond %{HTTP_USER_AGENT} (?:curl|wget|python|libwww-perl|java) [NC]
+  RewriteRule ^ - [F,L]
+
+  # Some hosts may require you to use the `RewriteBase` directive.
+  # Determine the RewriteBase automatically and set it as environment variable.
+  # If you are using Apache aliases to do mass virtual hosting or installed the
+  # project in a subdirectory, the base path will be prepended to allow proper
+  # resolution of the index.php file and to redirect to the correct URI. It will
+  # work in environments without path prefix as well, providing a safe, one-size
+  # fits all solution. But as you do not need it in this case, you can comment
+  # the following 2 lines to eliminate the overhead.
+  RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+  RewriteRule ^(.*) - [E=BASE:%1]
+  
+  # If the above doesn't work you might need to set the `RewriteBase` directive manually, it should be the
+  # absolute physical path to the directory that contains this htaccess file.
+  RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Extra security for apache server
+<IfModule mod_headers.c>
+    # Header always set Content-Security-Policy "upgrade-insecure-requests;"
+    
+    # Tell browser to stop to sniff
+    Header set X-Content-Type-Options "nosniff"
+    Header always set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+
+    # Setting this for XSS attack
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Content-Security-Policy "default-src 'self';"
+    # Header set X-Content-Security-Policy "default-src 'self';"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+    
+    # Setting this header will prevent other sites from embedding pages from this
+    # site as frames. This defends against clickjacking attacks.
+    # Requires mod_headers to be enabled.
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Header unset Server
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+    Header unset X-CF-Powered-By
+    Header unset X-Mod-Pagespeed
+    Header unset X-Pingback
+</IfModule>
+
+# Protect sensitive files
+<FilesMatch "\.(env|htaccess|ini|log|sh|bak|sql|swp)$">
+    Require all denied
+</FilesMatch>
+
+# Use gzip to compress all output files and some exclusion files.
+<ifModule mod_deflate.c>
+    # Set to gzip all output
+    SetOutputFilter DEFLATE
+    # AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/x-javascript application/x-httpd-php
+    
+    # exclude the following file types
+    SetEnvIfNoCase Request_URI \.(?:exe|t?gz|zip|iso|tar|bz2|sit|rar|png|jpg|gif|jpeg|flv|swf|mp3)$ no-gzip dont-vary
+    
+    # set compression level of mod_deflate.c module
+    DeflateCompressionLevel 6
+    
+    # Handle browser specific compression requirements
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4.0[678] no-gzip
+    BrowserMatch bMSIE !no-gzip !gzip-only-text/html
+    SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+</IfModule>
